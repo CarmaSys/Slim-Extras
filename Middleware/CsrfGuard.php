@@ -116,7 +116,10 @@ class CsrfGuard extends \Slim\Middleware
         if (in_array($this->app->request()->getMethod(), array('POST', 'PUT', 'DELETE'))) {
             // Check headers for X-XSRF-TOKEN to support AngularJS
             if($this->app->request()->isAjax() && $this->app->request()->headers('X-'.$this->key)) {
-                $userToken = $this->app->request()->headers('X-' . $this->key);
+                $key = 'X-' . $this->key;
+                $userToken = $this->app->request()->headers($key);
+               // Generate a new token for async calls since there's no page refresh
+               $this->setToken(self::generateToken());
             } else {
                 $userToken = $this->app->request()->post($this->key);
             }
